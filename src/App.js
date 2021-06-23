@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { Cards, Chart, CountryPicker } from './components';
+import Style from './App.module.css';
+import { fetchData } from './api/index';
+import Header from './components/header/Header';
+import Footer from './components/footer/Footer';
+class App extends React.Component {
+	state = {
+		data    : {},
+		country : ''
+	};
+	async componentDidMount() {
+		const fetchedData = await fetchData();
+		this.setState({ data: fetchedData });
+	}
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+	handleCoutryChange = async (country) => {
+		const fetchedData = await fetchData(country);
+		console.log(fetchedData);
+		this.setState({ data: fetchedData, country: country });
+	};
+	render() {
+		const { data, country } = this.state;
+		return (
+			<div className={Style.container}>
+				<Header />
+				<Cards data={data} />
+				<CountryPicker onCountryHandler={this.handleCoutryChange} />
+				<Chart data={data} country={country} />
+				<Footer />
+			</div>
+		);
+	}
 }
 
 export default App;
